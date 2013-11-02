@@ -1,0 +1,1 @@
+<footer>Powered by <a href="http://cragglist.uphero.com/">Cragglist</a></footer>

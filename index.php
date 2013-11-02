@@ -1,54 +1,34 @@
-<?php $q=stripslashes(preg_replace('/\s\s+/', ' ', $_GET['q']));
-$search=$_GET['search']; ?>
-<!doctype html>
-<!--[if lt IE 7]> <html class="ie6 oldie"> <![endif]-->
-<!--[if IE 7]>    <html class="ie7 oldie"> <![endif]-->
-<!--[if IE 8]>    <html class="ie8 oldie"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html class="">
-<!--<![endif]-->
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="shortcut icon" href="/image/favicon.ico" type="image/x-icon">
-<link rel="icon" href="/image/favicon.ico" type="image/x-icon">
-<title>Meta Search - Cragglist.uphero.com</title>
-<meta name="author" content="vlul.co.uk,cragglist.uphero.com">
-<meta name="description" content="free calculator/meta search engine salution for every one easy an da quick instulation">
-<meta name="keywords" content="calculator,meta search engine, free salution, all-in one calculation, fast and easy instulation">
-<link href="boilerplate.css" rel="stylesheet" type="text/css">
-<link href="style.css?v=2" rel="stylesheet" type="text/css">
-<!--[if lt IE 9]>
-<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-<!--[if lt IE 9]>
-<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
+<?php 
+	$q=stripslashes(preg_replace('/\s\s+/', ' ', $_GET['q']));
+	$qw=preg_replace("/[^A-Za-z0-9 ]/", "", $q);
+
+	$search=$_GET['search'];
+	require_once("header.php");
+	?>
 <style type="text/css">
 .navigation {
-	<? if(str_replace(" ","",$q)=="") {
-echo 'margin-top: 15%;
+<? if(str_replace(" ","",$qw)=="") {
+		echo 'margin-top: 15%;
 text-align: center;';
-	}
-	else{
+	} else {
 		echo 'background: #f2f2f2;
-		border-bottom: 1px solid #e4e4e4;
-    padding: 12px 10px;';
+border-bottom: 1px solid #e4e4e4;
+    padding: 12px 10px;
+position:fixed;
+top:0;
+left:0;
+right:0;';
 	}
 	?>
 }
-<? if($q==""  or $q==" ") {
-echo 'footer {
+<? if(str_replace(" ","",$qw)=="") {
+	echo 'footer {
 	position:absolute;
 	left:0;
 	right:0;
 	bottom:0;
 	} nav {
-	position:absolute;
-	left:0;
-	right:0;
-	top:0;
-border:0
+margin:0;
 	}
 .logo {
 padding: 17px;
@@ -57,119 +37,109 @@ display: block;
 input.input-text {
 width: 40%;
 }';
-	}
-if($search=="images") {
-echo '.img_result_main {
-max-height: 100%;
-overflow-y: hidden;
-	}';
-	}
+	} 
 	?>
-
 </style>
-</head>
 <body>
+<nav>
+    <li><a href="?q=<? echo $q  ?>&search=web">Web</a></li>
+    <li><a href="?q=<? echo $q  ?>&search=images">Image</a></li>
+    <li><a href="?q=<? echo $q  ?>&search=videos">Video</a></li>
+    <li><a href="?q=<? echo $q  ?>&search=news">News</a></li>
+  </nav>
 <div class="navigation">
 <form>
-<div class="logo"><a href="/"><img src="/image/logo_main.png" alt="logo"></a></div><input type="search" class="input-text" name="q" value="<? echo $q ?>" /><input type="hidden" name="search" value="<? echo $search; ?>"><input type="submit" class="g-button" value="Search" />
+<div class="logo"><a href="/"><img src="/image/logo_main.png" alt="logo"></a></div><input type="search" class="input-text" name="q" value="<? echo $q  ?>" id="search" /><input type="hidden" name="search" value="<? echo $search; ?>"><input type="submit" class="g-button" value="Search" />
 </form>
 </div>
-<nav>
-    <li><a href="?q=<? echo $q ?>&search=web">Web</a></li>
-    <li><a href="?q=<? echo $q ?>&search=images">Image</a></li>
-    <li><a href="?q=<? echo $q ?>&search=videos">Video</a></li>
-  </nav>
-<? error_reporting(0);
+<?	error_reporting(0);
 	require_once("functions.php");
 	// now have some fun with the results...
-	if($q==""  or $q==" ") {
+	
+	if(str_replace(" ","",$qw)=="") {
 	} else {
 		$page = preg_replace('/[^-0-9]/', '', $_GET['page']);
 		
 		if($page=="" or $page==" ") {
 			$page="1";
 		}
-$previous=$page-1;
-$next=$page+1;
-$total_pages="100";
-$qe=urlencode($q);
-$limit=12;
-$start = ($page-1) * $limit;
-if($search =="images") {
-$results = array_merge(image($qe,$start), image($qe,$start+4),image($qe,$start+8),image($qe,$start+12));
-echo '<ol class="img_result_main">';
-			foreach ($results as $result) {
-echo '<li class="video_results">
-		<a href="'.$result['content'].'"><img class="thumbnail" src="'.$result['url'].'"></a>
-		</br>
-        <a class="title" href="'.$result['content'].'">'.$result['alt'].'</a>
-      </li>';
-			}
-			echo '</ol>
-			<div class="pagination">';
-			if ($page > 1) {
-				echo '<a class="page-button" href="?q='.$qe.'&page='.$previous.'&search='.$search.'">Previous</a>';
-			}
-			for ($i = max(1, $page - 5); $i <= min($page + 5, $total_pages); $i++) {
-				echo '<a class="page-button" href="?q='.$qe.'&page='.$i.'&search='.$search.'">'.$i.'</a>';
-			}
-
-			echo ' <a class="page-button" href="?q='.$qe.'&page='.$next.'&search='.$search.'">Next</a>';
-		echo'</div>';
-}
-else if($search =="videos") {
-$vidlimit="21";
-video($qe,intval(($page-1)*$vidlimit),$vidlimit);
-			echo '<div class="pagination">';
-			if ($page > 1) {
-				echo '<a class="page-button" href="?q='.$qe.'&page='.$previous.'&search='.$search.'">Previous</a>';
-			}
-			for ($i = max(1, $page - 5); $i <= min($page + 5, $total_pages); $i++) {
-				echo '<a class="page-button" href="?q='.$qe.'&page='.$i.'&search='.$search.'">'.$i.'</a>';
-			}
-			echo ' <a class="page-button" href="?q='.$qe.'&page='.$next.'&search='.$search.'">Next</a>';
-		echo'</div>';
-}
-else {
-$limit=12;
-$start = ($page-1) * $limit;
-			$results = array_merge(image($qe,$start), image($qe,$start+4),image($qe,$start+8));
-echo '<ol class="img_result_main">';
-			foreach ($results as $result) {
-echo '<li class="video_results">
-		<a href="'.$result['content'].'"><img class="thumbnail" src="'.$result['url'].'"></a>
-      </li>';
-}
-echo "</ol>";
-echo'<div class="results_container">';
-			$results = array_merge(web($qe,$start), web($qe,$start+4),web($qe,$start+8));
-			foreach ($results as $result) {
-				echo'<li class="results"><h3><a href="'.$result['url'].'">'.$result['title'].'</a></h3>
-		<cite>'.$result['visibleUrl'].'</cite><br>
-		<span class="st">'.$result['abstract'].'</span></li>';
-			}
+		$qe=urlencode($q);
+		$qs=urlencode($qw);
+		$limit=12;
+		$start = ($page-1) * $limit;
+		
+		if($search=="images" || $search=="videos" || $search=="news") {
+			echo '<ol class="vid_result_main">';
 			
+			if($search =="images") {
+				image_str(array_merge(image($qs,$start+1), image($qs,$start+5),image($qs,$start+9),image($qs,$start+13)));
+			} else
+			if($search =="videos") {
+				video($qs,$page,21);
+			} else
+			if($search =="news") {
+				news($qs,$page,21);
+			}
+			echo '</ol>';
+			pagination('?q='.$qe.'&search='.$search);
+			} else
+			if($search =="weather") {
+ 			 weather();
+			} else {
+			$limit=12;
+			$start = ($page-1) * $limit;
+			echo '<ol class="img_result_main">';
+			image_str(array_merge(image($qs,$start+1), image($qs,$start+5),image($qs,$start+9)));
+			echo "</ol>";
+			echo'<div class="results_container">';
+?>
+<script type="text/javascript"> 
+  ( function() {
+    if (window.CHITIKA === undefined) {
+      window.CHITIKA = { 'units' : [] };
+    };
+    var unit = {
+      'fluidH' : 1,
+      'nump' : "2",
+      'publisher' : "waheedpay",
+      'width' : 528,
+      'height' : "auto",
+      'type' : "mpu",
+      'sid' : "Chitika Default",
+      'color_site_link' : "0000CC",
+      'color_title' : "0000CC",
+      'color_border' : "FFFFFF",
+      'color_text' : "000000",
+      'color_bg' : "FFFFFF"
+    };
+    var placement_id = window.CHITIKA.units.length;
+    window.CHITIKA.units.push(unit);
+    document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.src = 'http://scripts.chitika.net/getads.js';
+    try {
+      document.getElementsByTagName('head')[0].appendChild(s);
+    } catch(e) {
+      document.write(s.outerHTML);
+    }
+}());
+</script>
+<?
+web_str(array_merge(web($qs,$start), web($qs,$start+4),web($qs,$start+8)));
 			if (count($results) < $pageslimit) {
 				echo '<li class="results">Oops!, You\'ve reached the end of the results.</li>';
 			}
 
 			echo '</ol>';
-$vidlimit="6";
-video($qe,intval(($page-1)*$vidlimit),$vidlimit);
-			echo '<div class="pagination">';
-			if ($page > 1) {
-				echo '<a class="page-button" href="?q='.$qe.'&page='.$previous.'&search='.$search.'">Previous</a>';
-			}
-			for ($i = max(1, $page - 5); $i <= min($page + 5, $total_pages); $i++) {
-				echo '<a class="page-button" href="?q='.$qe.'&page='.$i.'&search='.$search.'">'.$i.'</a>';
-			}
-			echo ' <a class="page-button" href="?q='.$qe.'&page='.$next.'&search='.$search.'">Next</a>';
-		echo'</div>
-</div>';
-}
-}
+			video($qs,$page,6);
+		pagination('?q='.$qe.'&search='.$search);
+			echo'</div>';
+		}
 
-?>
-<footer>Powered by <a href="http://cragglist.uphero.com/">Cragglist</a></footer>
+	}
+
+	require_once("footer.php");
+	?>
 </body>
 </html>
